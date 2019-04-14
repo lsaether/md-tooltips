@@ -1,8 +1,6 @@
 import markdown
 from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
 from markdown.inlinepatterns import Pattern
-import os
 from codecs import open
 
 DEF_RE = r'(@\()(?P<text>.+?)\)'
@@ -11,7 +9,7 @@ class DefinitionPattern(Pattern):
     def handleMatch(self, matched):
         text = matched.group("text")
         
-        filename = 'glossary.md' 
+        filename = "docs/glossary.md"
         with open(filename, 'r') as r:
             lines = r.readlines()
 
@@ -37,7 +35,19 @@ class DefinitionPattern(Pattern):
         return elem
 
 class MdTooltip(Extension):
+    def __init__(self, configs={}):
+        # NOTE: config is not actually passed to anything
+        self.config = {
+            'glossary_path': ['docs/glossary.md', "Default location for glossary."]
+        }
+
+        for key, value in configs.items():
+            self.setConfig(key, value)
+
     def extendMarkdown(self, md, md_globals):
         md.inlinePatterns["definition"] = DefinitionPattern(DEF_RE, md)
+
+def makeExtension(*args,**kwargs):
+    return MdTooltip(kwargs)
 
 # @(parachain) -> <span data-tooltip="xxxxxxxxxx">parachain</span> where xxxx = ./glossary.md#parachain
