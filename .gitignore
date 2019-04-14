@@ -1,0 +1,5 @@
+glossary.md
+md_tooltips.egg-info
+__pycache__
+env
+test.py
